@@ -1,3 +1,4 @@
+import { group } from "console";
 import db from "../models/index.js";
 import { QueryTypes } from "sequelize";
 
@@ -68,9 +69,44 @@ class ProgressService {
           AND JSON_UNQUOTE(JSON_EXTRACT(data, '$.endDate')) >= CURDATE()
       `);
 
-      const exams = await db.sequelize.query(
+      const username: { fullname: string; phoneNumber: string }[] =
+        await db.sequelize.query(
+          `SELECT fullname, phoneNumber FROM users WHERE userId = :userId`,
+          {
+            replacements: { userId: userId },
+            type: QueryTypes.SELECT,
+          }
+        );
+
+      const name = username[0]?.fullname || "";
+      const phoneNumber = username[0]?.phoneNumber || "";
+
+      const userGroup = await db.sequelize.query(
+        `SELECT g.title FROM groups g
+          JOIN user_groups ug ON g.groupId = ug.groupId
+          WHERE ug.userId = :userId
+          LIMIT 1`,
+        {
+          replacements: { userId: userId },
+          type: QueryTypes.SELECT,
+        }
+      );
+      const groupData = userGroup[0] as { title: string } | undefined;
+      const groupTitle = groupData?.title || null;
+
+      const runningCourseIds = runningCourses.map((c: any) => c.courseId);
+      const runningTryoutIds = runningTryouts.map((t: any) => t.tryoutId);
+
+      const exams: any[] = await db.sequelize.query(
         `
-        SELECT *
+        SELECT 
+          userId,
+          JSON_UNQUOTE(JSON_EXTRACT(data, '$.tryoutSectionTitle')) AS tryout_title,
+          JSON_UNQUOTE(JSON_EXTRACT(data, '$.tryoutId')) AS tryoutId,
+          JSON_UNQUOTE(JSON_EXTRACT(data, '$.title')) AS course_title,
+          JSON_UNQUOTE(JSON_EXTRACT(data, '$.courseId')) AS courseId,
+          JSON_UNQUOTE(JSON_EXTRACT(data, '$.status')) AS status,
+          JSON_UNQUOTE(JSON_EXTRACT(data, '$.scores')) AS scores
         FROM exams
         WHERE userId = userId
           AND JSON_UNQUOTE(JSON_EXTRACT(data, '$.status')) IN ('submitted', 'completed')
@@ -82,36 +118,49 @@ class ProgressService {
         {
           replacements: {
             userId: userId,
-            runningTryoutIds: runningTryouts.map((t: any) => t.tryoutId),
-            runningCourseIds: runningCourses.map((c: any) => c.courseId),
+            runningTryoutIds,
+            runningCourseIds,
           },
           type: QueryTypes.SELECT,
         }
       );
+      // Rata-rata quiz score
+      const validScores = exams
+        .map((exam) => exam.scores)
+        .filter((score) => score !== null && !isNaN(score));
 
       const possibilityExam = runningCourses.length + runningTryouts.length;
+      const averageQuizScore =
+        validScores.length > 0
+          ? validScores.reduce((sum, val) => sum + parseFloat(val), 0) /
+            validScores.length
+          : null;
       const progress =
         possibilityExam > 0 ? (exams.length / possibilityExam) * 100 : 0;
-      console.log("progress", progress);
-      console.log("exams", exams.length);
-      console.log("runningCourses.length", runningCourses.length);
-      console.log("runningTryouts.length", runningTryouts.length);
 
       return {
-        userId,
-        runningCourses,
-        progress,
+        id: userId,
+        name,
+        phoneNumber,
+        groupTitle,
+        averageQuizScore,
+        examCompleted: exams.length,
+        examPossible: runningCourseIds.length + runningTryoutIds.length,
+        completion: progress.toFixed(2),
+        examList: exams,
       };
     } catch (error: any) {
       throw new Error("failed to get progress:" + error.message);
     }
   }
 
-  async getProgressAllUsers() {
+  async getProgressAll() {
     try {
       const [users] = await db.sequelize.query(
         `SELECT DISTINCT userId FROM users WHERE active = 1;`
       );
+      const [groups] = await db.sequelize.query(`SELECT title FROM groups;`);
+
       const [runningCourses] = await db.sequelize.query(`
         SELECT courseId
         FROM courses
@@ -125,6 +174,38 @@ class ProgressService {
         WHERE JSON_UNQUOTE(JSON_EXTRACT(data, '$.startDate')) <= CURDATE()
           AND JSON_UNQUOTE(JSON_EXTRACT(data, '$.endDate')) >= CURDATE()
       `);
+
+      const [groupStats] = await db.sequelize.query(
+        `
+        SELECT 
+          g.title AS \`group\`,
+          COUNT(e.examId) AS total,
+          COUNT(DISTINCT e.userId) AS submitter_count
+        FROM exams e
+        JOIN users u ON e.userId = u.userId
+        JOIN user_groups ug ON u.userId = ug.userId
+        JOIN \`groups\` g ON ug.groupId = g.groupId
+        WHERE JSON_UNQUOTE(JSON_EXTRACT(e.data, '$.status')) IN ('submitted', 'completed')
+        GROUP BY g.title
+        `
+      );
+
+      const groupData = groupStats.map((stat: any) => ({
+        group: stat.group,
+        total: stat.total,
+        submitter: stat.submitter_count,
+      }));
+
+      const groupProgress = groupData.map((data) => {
+        const progress =
+          data.total > 0 ? (data.submitter / data.total) * 100 : 0;
+        return {
+          group: data.group,
+          total: data.total,
+          submitter: data.submitter,
+          progress: parseFloat(progress.toFixed(2)), // Membatasi 2 desimal
+        };
+      });
 
       const runningCourseIds = runningCourses.map((c: any) => c.courseId);
       const runningTryoutIds = runningTryouts.map((t: any) => t.tryoutId);
@@ -158,8 +239,12 @@ class ProgressService {
       const totalUser = users.length;
       const possibilityExam = runningCourses.length + runningTryouts.length;
 
-      const allProgress =
-        possibilityExam > 0 ? exams.length / (totalUser * possibilityExam) : 0;
+      const allProgressScore =
+        possibilityExam > 0
+          ? parseFloat(
+              ((exams.length / (totalUser * possibilityExam)) * 100).toFixed(2)
+            )
+          : 0;
 
       // Rata-rata quiz score
       const validScores = exams
@@ -171,17 +256,15 @@ class ProgressService {
           ? validScores.reduce((sum, val) => sum + parseFloat(val), 0) /
             validScores.length
           : null;
-      console.log("valid score", validScores);
-      console.log("avr score", averageQuizScore);
-      console.log("user ", totalUser);
-      console.log("possibly ", possibilityExam);
-      console.log("allprogress ", allProgress);
 
       const progressSummary = {
         totalUser: users.length,
-        allProgress,
+        totalGroups: groups.length,
         averageQuizScore,
-        exams,
+        completion: allProgressScore,
+        totalExamPossible: runningCourseIds.length + runningTryoutIds.length,
+        totalExamCompleted: exams.length,
+        groupProgress,
       };
 
       return progressSummary;

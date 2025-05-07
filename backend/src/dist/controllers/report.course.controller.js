@@ -45,7 +45,7 @@ class ReportController {
     }
     async getAllProgressUsers(req, res) {
         try {
-            const progressUsers = await ProgressService.getProgressAllUsers();
+            const progressUsers = await ProgressService.getProgressAll();
             res.status(200).json({
                 status: "Success",
                 message: "Successfully get list running exams",
