@@ -34,7 +34,7 @@ function createExam(userId, tryoutId, tryoutSectionTitle) {
         createdAt: now,
         updatedAt: endTime,
         data: JSON.stringify({
-            scores: 0,
+            scores: 90,
             status: getRandomStatus(), // Menetapkan status acak
             platform: "website",
             duration: 36000000,

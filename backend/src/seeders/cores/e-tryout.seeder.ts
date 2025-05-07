@@ -32,6 +32,8 @@ export default {
               <li>Jika waktu habis, jawaban yang sudah terisi akan dikumpulkan secara otomatis.</li>
             </ol>
           </div>`,
+          startDate: "2025-05-01",
+          endDate: "2025-10-01",
         }),
         tag: "phincon",
         active: 1,
@@ -65,6 +67,8 @@ export default {
               <li>Jika waktu habis, jawaban yang sudah terisi akan dikumpulkan secara otomatis.</li>
             </ol>
           </div>`,
+          startDate: "2025-05-01",
+          endDate: "2025-10-01",
         }),
         tag: "phincon",
         active: 1,
@@ -99,6 +103,8 @@ export default {
               <li>Jika waktu habis, jawaban yang sudah terisi akan dikumpulkan secara otomatis.</li>
             </ol>
           </div>`,
+          startDate: "2025-05-01",
+          endDate: "2025-10-01",
         }),
         tag: "phincon",
         active: 1,
@@ -115,6 +121,26 @@ export default {
         data: JSON.stringify({
           icon: " ",
           type: "multiple-choice",
+          duration: 3600000,
+          telegram: {
+            shortId: 3,
+            instruction: "Please follow the current instruction:",
+          },
+          instruction: `<div style="max-width: 700px; margin: 40px auto; background: #121212; padding: 20px; border-radius: 8px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);">
+            <h2 style="color: white; text-align: center; border-bottom: 3px solid black; padding-bottom: 10px;">Panduan Pengerjaan Soal Cyber Security</h2>
+            <h3 style="color: white; margin-top: 20px;"><strong>Durasi:</strong> 1 jam</h3>
+            <h3 style="color: white;"><strong>Jumlah Soal:</strong> 20 (Pilihan Ganda)</h3>
+            <h3 style="color: white; border-bottom: 2px solid #ddd; padding-bottom: 5px;">Petunjuk Pengerjaan:</h3>
+            <ol style="color: white; font-size: 16px; line-height: 1.6; padding-left: 20px; list-style-type: disc;">
+              <li>Bacalah setiap soal dengan cermat sebelum menjawab.</li>
+              <li>Pilihlah jawaban yang paling tepat dari <strong>a, b, c, d, atau e</strong>.</li>
+              <li>Tidak diperkenankan menggunakan catatan atau alat bantu lainnya.</li>
+              <li>Jawaban yang benar akan diberikan <strong>1 poin</strong>, tidak ada pengurangan poin untuk jawaban salah.</li>
+              <li>Jika waktu habis, jawaban yang sudah terisi akan dikumpulkan secara otomatis.</li>
+            </ol>
+          </div>`,
+          startDate: "2025-05-01",
+          endDate: "2025-10-01",
         }),
       },
     ];

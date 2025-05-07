@@ -37,7 +37,7 @@ export default function DashboardHeader() {
           className="bg-green-600 hover:bg-green-700"
         >
           <FileDown className="mr-2 h-4 w-4" />
-          Export
+          Export All To Excel
         </Button>
       </div>
     </div>
