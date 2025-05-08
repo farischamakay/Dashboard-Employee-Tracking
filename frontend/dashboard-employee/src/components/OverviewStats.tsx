@@ -1,18 +1,17 @@
 import { Card, CardContent } from "../components/ui/card";
 import type { Employee } from "../store/useEmployeeStore";
-import { Users, Award, BarChart, BookOpen } from "lucide-react";
+import { Users, Award, BookOpen } from "lucide-react";
 import {
   PieChart,
+  BarChart,
+  Bar,
   Pie,
   Cell,
   ResponsiveContainer,
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
 } from "recharts";
 
 interface OverviewStatsProps {
@@ -50,10 +49,10 @@ export default function OverviewStats({ employees }: OverviewStatsProps) {
 
   // Performance trend data
   const performanceTrendData = [
-    { name: "Week 1", avgScore: 82, completion: 30 },
-    { name: "Week 2", avgScore: 85, completion: 45 },
-    { name: "Week 3", avgScore: 87, completion: 60 },
-    { name: "Week 4", avgScore: 90, completion: 78 },
+    { name: "Course 1", avgScore: 82, completion: 30 },
+    { name: "Course 2", avgScore: 85, completion: 45 },
+    { name: "Course 3", avgScore: 87, completion: 60 },
+    { name: "Course 4", avgScore: 90, completion: 78 },
   ];
 
   return (
@@ -141,9 +140,10 @@ export default function OverviewStats({ employees }: OverviewStatsProps) {
                   data={pieData}
                   cx="50%"
                   cy="50%"
-                  labelLine={false}
+                  innerRadius={60}
                   outerRadius={80}
                   fill="#8884d8"
+                  paddingAngle={5}
                   dataKey="value"
                   label={({ name, percent }) =>
                     `${name}: ${(percent * 100).toFixed(0)}%`
@@ -165,30 +165,51 @@ export default function OverviewStats({ employees }: OverviewStatsProps) {
 
       <Card className="md:col-span-2">
         <CardContent className="pt-6">
-          <h3 className="font-semibold mb-4">Training Performance Trend</h3>
-          <div className="h-[220px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={performanceTrendData}>
+          <h3 className="font-semibold mb-12">Employee Best Performance</h3>
+          <div className="h-[250px]">
+            <ResponsiveContainer width="100%" height="120%">
+              <BarChart
+                data={performanceTrendData}
+                margin={{ top: 5, right: 30, left: 20, bottom: 60 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="avgScore"
-                  stroke="#6366f1"
-                  name="Avg Score (%)"
-                  strokeWidth={2}
+                <XAxis
+                  dataKey="name"
+                  angle={-45}
+                  textAnchor="end"
+                  height={70}
+                  tick={{ fontSize: 12 }}
                 />
-                <Line
-                  type="monotone"
-                  dataKey="completion"
-                  stroke="#10b981"
-                  name="Completion Rate (%)"
-                  strokeWidth={2}
+                <YAxis
+                  domain={[0, 100]}
+                  label={{
+                    value: "Score (%)",
+                    angle: -90,
+                    position: "insideLeft",
+                    style: { textAnchor: "middle" },
+                  }}
                 />
-              </LineChart>
+                <Tooltip
+                  formatter={(value, name, props) => [
+                    `${value}%`,
+                    `${props.payload.name}`,
+                  ]}
+                />
+                <Bar dataKey="avgScore" radius={[4, 4, 0, 0]}>
+                  {performanceTrendData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={
+                        entry.avgScore >= 90
+                          ? "#10b981"
+                          : entry.avgScore >= 75
+                          ? "#6366f1"
+                          : "#f59e0b"
+                      }
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
             </ResponsiveContainer>
           </div>
         </CardContent>

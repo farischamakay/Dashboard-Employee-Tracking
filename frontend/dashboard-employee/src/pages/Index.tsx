@@ -2,6 +2,7 @@ import { useEmployeeStore } from "../store/useEmployeeStore";
 import DashboardHeader from "../components/DashboardHeader";
 import EmployeeCard from "../components/EmployeeCard";
 import EmployeeOverview from "../components/EmployeeOverview";
+import RunningOverview from "../components/RunningOverview";
 import OverviewStats from "../components/OverviewStats";
 import { useEffect, useState } from "react";
 
@@ -46,6 +47,10 @@ const Index = () => {
         <DashboardHeader />
 
         <OverviewStats employees={employees} />
+
+        <div>
+          <RunningOverview></RunningOverview>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Employee List */}

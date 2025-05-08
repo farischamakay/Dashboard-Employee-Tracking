@@ -34,10 +34,10 @@ export default function DashboardHeader() {
         </div>
         <Button
           onClick={handleExport}
-          className="bg-green-600 hover:bg-green-700"
+          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex items-center"
         >
           <FileDown className="mr-2 h-4 w-4" />
-          Export All To Excel
+          Export All
         </Button>
       </div>
     </div>

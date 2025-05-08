@@ -59,7 +59,11 @@ export default function EmployeeCard({
             {completedCourses}/{totalCourses}
           </span>
         </div>
-        <Progress value={employee.completionRate} className="h-2" />
+        <Progress
+          value={employee.completionRate}
+          className="h-2 bg-gray-200"
+          indicatorClassName="bg-blue-500"
+        />
       </div>
 
       <div className="flex items-center gap-2 mt-3 text-sm">
