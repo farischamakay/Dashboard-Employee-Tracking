@@ -65,17 +65,22 @@ export default {
     const [tryoutSections]: any[] = await queryInterface.sequelize.query(`
       SELECT tryoutId as sectionId, title as sectionTitle 
       FROM tryout_sections 
-      LIMIT 1
+      LIMIT 10
     `);
 
     if (!tryoutSections.length) {
       throw new Error("No tryout_sections found");
     }
 
-    const { sectionId, sectionTitle } = tryoutSections[0];
-    const exams = users.map((user: any) =>
-      createExam(user.userId, sectionId, sectionTitle)
-    );
+    let exams = [];
+
+    for (const section of tryoutSections) {
+      for (const user of users) {
+        exams.push(
+          createExam(user.userId, section.sectionId, section.sectionTitle)
+        );
+      }
+    }
 
     await queryInterface.bulkInsert("exams", exams, {});
   },

@@ -1,5 +1,4 @@
-
-import { create } from 'zustand';
+import { create } from "zustand";
 
 export interface Quiz {
   id: number;
@@ -15,6 +14,13 @@ export interface Course {
   progress: number;
   completed: boolean;
   quizzes: Quiz[];
+}
+
+interface ExportStore {
+  exportBy: "all" | "users" | "groups";
+  fileName: string;
+  setExportBy: (value: "all" | "users" | "groups") => void;
+  setFileName: (name: string) => void;
 }
 
 export interface Employee {
@@ -53,9 +59,21 @@ const mockEmployees: Employee[] = [
         progress: 85,
         completed: false,
         quizzes: [
-          { id: 1001, title: "ES6 Features", score: 90, maxScore: 100, completedAt: "2025-04-10" },
-          { id: 1002, title: "Asynchronous JS", score: 85, maxScore: 100, completedAt: "2025-04-15" }
-        ]
+          {
+            id: 1001,
+            title: "ES6 Features",
+            score: 90,
+            maxScore: 100,
+            completedAt: "2025-04-10",
+          },
+          {
+            id: 1002,
+            title: "Asynchronous JS",
+            score: 85,
+            maxScore: 100,
+            completedAt: "2025-04-15",
+          },
+        ],
       },
       {
         id: 102,
@@ -63,14 +81,26 @@ const mockEmployees: Employee[] = [
         progress: 100,
         completed: true,
         quizzes: [
-          { id: 1003, title: "Component Basics", score: 95, maxScore: 100, completedAt: "2025-03-18" },
-          { id: 1004, title: "React Hooks", score: 88, maxScore: 100, completedAt: "2025-03-25" }
-        ]
-      }
+          {
+            id: 1003,
+            title: "Component Basics",
+            score: 95,
+            maxScore: 100,
+            completedAt: "2025-03-18",
+          },
+          {
+            id: 1004,
+            title: "React Hooks",
+            score: 88,
+            maxScore: 100,
+            completedAt: "2025-03-25",
+          },
+        ],
+      },
     ],
     averageScore: 89.5,
     completionRate: 50,
-    lastActivity: "2025-04-15"
+    lastActivity: "2025-04-15",
   },
   {
     id: 2,
@@ -85,9 +115,21 @@ const mockEmployees: Employee[] = [
         progress: 100,
         completed: true,
         quizzes: [
-          { id: 2001, title: "User Research", score: 98, maxScore: 100, completedAt: "2025-04-02" },
-          { id: 2002, title: "Prototyping", score: 92, maxScore: 100, completedAt: "2025-04-09" }
-        ]
+          {
+            id: 2001,
+            title: "User Research",
+            score: 98,
+            maxScore: 100,
+            completedAt: "2025-04-02",
+          },
+          {
+            id: 2002,
+            title: "Prototyping",
+            score: 92,
+            maxScore: 100,
+            completedAt: "2025-04-09",
+          },
+        ],
       },
       {
         id: 202,
@@ -95,13 +137,19 @@ const mockEmployees: Employee[] = [
         progress: 75,
         completed: false,
         quizzes: [
-          { id: 2003, title: "Components & Variants", score: 88, maxScore: 100, completedAt: "2025-03-22" }
-        ]
-      }
+          {
+            id: 2003,
+            title: "Components & Variants",
+            score: 88,
+            maxScore: 100,
+            completedAt: "2025-03-22",
+          },
+        ],
+      },
     ],
     averageScore: 92.7,
     completionRate: 67,
-    lastActivity: "2025-04-09"
+    lastActivity: "2025-04-09",
   },
   {
     id: 3,
@@ -116,14 +164,26 @@ const mockEmployees: Employee[] = [
         progress: 100,
         completed: true,
         quizzes: [
-          { id: 3001, title: "Setting Goals", score: 95, maxScore: 100, completedAt: "2025-03-15" },
-          { id: 3002, title: "Feedback Techniques", score: 85, maxScore: 100, completedAt: "2025-03-22" }
-        ]
-      }
+          {
+            id: 3001,
+            title: "Setting Goals",
+            score: 95,
+            maxScore: 100,
+            completedAt: "2025-03-15",
+          },
+          {
+            id: 3002,
+            title: "Feedback Techniques",
+            score: 85,
+            maxScore: 100,
+            completedAt: "2025-03-22",
+          },
+        ],
+      },
     ],
     averageScore: 90,
     completionRate: 100,
-    lastActivity: "2025-03-22"
+    lastActivity: "2025-03-22",
   },
   {
     id: 4,
@@ -138,8 +198,14 @@ const mockEmployees: Employee[] = [
         progress: 60,
         completed: false,
         quizzes: [
-          { id: 4001, title: "SEO Basics", score: 78, maxScore: 100, completedAt: "2025-04-05" }
-        ]
+          {
+            id: 4001,
+            title: "SEO Basics",
+            score: 78,
+            maxScore: 100,
+            completedAt: "2025-04-05",
+          },
+        ],
       },
       {
         id: 402,
@@ -147,14 +213,26 @@ const mockEmployees: Employee[] = [
         progress: 90,
         completed: false,
         quizzes: [
-          { id: 4002, title: "Content Planning", score: 92, maxScore: 100, completedAt: "2025-03-28" },
-          { id: 4003, title: "Analytics", score: 85, maxScore: 100, completedAt: "2025-04-10" }
-        ]
-      }
+          {
+            id: 4002,
+            title: "Content Planning",
+            score: 92,
+            maxScore: 100,
+            completedAt: "2025-03-28",
+          },
+          {
+            id: 4003,
+            title: "Analytics",
+            score: 85,
+            maxScore: 100,
+            completedAt: "2025-04-10",
+          },
+        ],
+      },
     ],
     averageScore: 85,
     completionRate: 0,
-    lastActivity: "2025-04-10"
+    lastActivity: "2025-04-10",
   },
   {
     id: 5,
@@ -169,9 +247,21 @@ const mockEmployees: Employee[] = [
         progress: 100,
         completed: true,
         quizzes: [
-          { id: 5001, title: "Scrum Framework", score: 96, maxScore: 100, completedAt: "2025-03-10" },
-          { id: 5002, title: "Sprint Planning", score: 94, maxScore: 100, completedAt: "2025-03-17" }
-        ]
+          {
+            id: 5001,
+            title: "Scrum Framework",
+            score: 96,
+            maxScore: 100,
+            completedAt: "2025-03-10",
+          },
+          {
+            id: 5002,
+            title: "Sprint Planning",
+            score: 94,
+            maxScore: 100,
+            completedAt: "2025-03-17",
+          },
+        ],
       },
       {
         id: 502,
@@ -179,13 +269,19 @@ const mockEmployees: Employee[] = [
         progress: 45,
         completed: false,
         quizzes: [
-          { id: 5003, title: "Risk Assessment", score: 88, maxScore: 100, completedAt: "2025-04-12" }
-        ]
-      }
+          {
+            id: 5003,
+            title: "Risk Assessment",
+            score: 88,
+            maxScore: 100,
+            completedAt: "2025-04-12",
+          },
+        ],
+      },
     ],
     averageScore: 92.7,
     completionRate: 50,
-    lastActivity: "2025-04-12"
+    lastActivity: "2025-04-12",
   },
   {
     id: 6,
@@ -200,9 +296,21 @@ const mockEmployees: Employee[] = [
         progress: 80,
         completed: false,
         quizzes: [
-          { id: 6001, title: "Chart Types", score: 92, maxScore: 100, completedAt: "2025-04-08" },
-          { id: 6002, title: "Dashboard Design", score: 88, maxScore: 100, completedAt: "2025-04-15" }
-        ]
+          {
+            id: 6001,
+            title: "Chart Types",
+            score: 92,
+            maxScore: 100,
+            completedAt: "2025-04-08",
+          },
+          {
+            id: 6002,
+            title: "Dashboard Design",
+            score: 88,
+            maxScore: 100,
+            completedAt: "2025-04-15",
+          },
+        ],
       },
       {
         id: 602,
@@ -210,15 +318,27 @@ const mockEmployees: Employee[] = [
         progress: 100,
         completed: true,
         quizzes: [
-          { id: 6003, title: "Joins & Subqueries", score: 94, maxScore: 100, completedAt: "2025-03-25" },
-          { id: 6004, title: "Performance Optimization", score: 90, maxScore: 100, completedAt: "2025-04-01" }
-        ]
-      }
+          {
+            id: 6003,
+            title: "Joins & Subqueries",
+            score: 94,
+            maxScore: 100,
+            completedAt: "2025-03-25",
+          },
+          {
+            id: 6004,
+            title: "Performance Optimization",
+            score: 90,
+            maxScore: 100,
+            completedAt: "2025-04-01",
+          },
+        ],
+      },
     ],
     averageScore: 91,
     completionRate: 50,
-    lastActivity: "2025-04-15"
-  }
+    lastActivity: "2025-04-15",
+  },
 ];
 
 export const useEmployeeStore = create<EmployeeState>((set) => ({
@@ -228,4 +348,11 @@ export const useEmployeeStore = create<EmployeeState>((set) => ({
   setSelectedEmployee: (employee) => set({ selectedEmployee: employee }),
   filterText: "",
   setFilterText: (text) => set({ filterText: text }),
+}));
+
+export const useExportStore = create<ExportStore>((set) => ({
+  exportBy: "users",
+  fileName: "",
+  setExportBy: (value) => set({ exportBy: value }),
+  setFileName: (name) => set({ fileName: name }),
 }));

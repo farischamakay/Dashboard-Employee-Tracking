@@ -1,16 +1,33 @@
 import { useEmployeeStore } from "../store/useEmployeeStore";
+import {
+  useProgressStore,
+  useRunningCourseStore,
+  useRunningTryoutStore,
+} from "../store/useRealEmployeeStore";
 import DashboardHeader from "../components/DashboardHeader";
 import EmployeeCard from "../components/EmployeeCard";
 import EmployeeOverview from "../components/EmployeeOverview";
-import RunningOverview from "../components/RunningOverview";
+import CoursesOverview from "../components/CoursesOverview";
+import TryoutOverview from "../components/TryoutOverview";
+import ExportSection from "../components/ExportSection";
 import OverviewStats from "../components/OverviewStats";
+import { Input } from "../components/ui/input";
+import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "../components/ui/sonner";
 
 const Index = () => {
-  const { employees, selectedEmployee, setSelectedEmployee, filterText } =
+  const { employees, selectedEmployee, setSelectedEmployee } =
     useEmployeeStore();
 
+  const { progress, fetchAllProgress } = useProgressStore();
+
+  const { listRunningCourses, fetchRunningCourses } = useRunningCourseStore();
+
+  const { listRunningTryouts, fetchRunningTryouts } = useRunningTryoutStore();
+
   const [isMobile, setIsMobile] = useState(false);
+  const { filterText, setFilterText } = useEmployeeStore();
 
   // Check if mobile screen on mount and resize
   useEffect(() => {
@@ -25,6 +42,31 @@ const Index = () => {
       window.removeEventListener("resize", checkIsMobile);
     };
   }, []);
+
+  //Fetch employees
+  useEffect(() => {
+    fetchAllProgress().catch((err) => {
+      toast.error("Failed To load : " + err.message);
+      console.log(err);
+    });
+  }, [fetchAllProgress]);
+
+  //Fetch courses
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fetchRunningCourses().catch((err: any) => {
+      toast.error("Failed To load  Courses: " + err.message);
+      console.log(err);
+    });
+  }, [fetchRunningCourses]);
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fetchRunningTryouts().catch((err: any) => {
+      toast.error("Failed To load Tryout : " + err.message);
+      console.log(err);
+    });
+  }, [fetchRunningTryouts]);
 
   // Filter employees
   const filteredEmployees = employees.filter(
@@ -46,11 +88,13 @@ const Index = () => {
       <div className="max-w-7xl mx-auto">
         <DashboardHeader />
 
-        <OverviewStats employees={employees} />
+        <OverviewStats employees={progress} />
 
-        <div>
-          <RunningOverview></RunningOverview>
-        </div>
+        <CoursesOverview courses={listRunningCourses}></CoursesOverview>
+
+        <TryoutOverview tryouts={listRunningTryouts}></TryoutOverview>
+
+        <ExportSection></ExportSection>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Employee List */}
@@ -60,6 +104,16 @@ const Index = () => {
               <span className="text-sm text-muted-foreground">
                 {filteredEmployees.length} found
               </span>
+            </div>
+
+            <div className="relative w-full">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search employees..."
+                value={filterText}
+                onChange={(e) => setFilterText(e.target.value)}
+                className="pl-8"
+              />
             </div>
 
             <div

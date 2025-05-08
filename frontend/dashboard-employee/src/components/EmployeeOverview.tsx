@@ -4,8 +4,6 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
-import { Button } from "../components/ui/button";
-import { FileDown } from "lucide-react";
 import { Progress } from "../components/ui/progress";
 import { Separator } from "../components/ui/separator";
 import type { Employee } from "../store/useEmployeeStore";
@@ -60,13 +58,6 @@ export default function EmployeeOverview({ employee }: EmployeeOverviewProps) {
               {employee.position} • {employee.department}
             </div>
           </div>
-          <Button
-            onClick={() => "Employee_Learning_Report"}
-            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex items-center"
-          >
-            <FileDown className="mr-2 h-4 w-4" />
-            Export Data User
-          </Button>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">

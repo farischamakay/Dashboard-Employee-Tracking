@@ -53,7 +53,7 @@ class ProgressService {
     }
   }
 
-  async getProgress(userId: string) {
+  async getProgressById(userId: string) {
     try {
       const [runningCourses] = await db.sequelize.query(`
         SELECT courseId, title
@@ -175,27 +175,27 @@ class ProgressService {
           AND JSON_UNQUOTE(JSON_EXTRACT(data, '$.endDate')) >= CURDATE()
       `);
 
-      const [groupStats] = await db.sequelize.query(
-        `
-        SELECT 
-          g.title AS \`group\`,
-          COUNT(e.examId) AS total,
-          COUNT(DISTINCT e.userId) AS submitter_count
-        FROM exams e
-        JOIN users u ON e.userId = u.userId
-        JOIN user_groups ug ON u.userId = ug.userId
-        JOIN \`groups\` g ON ug.groupId = g.groupId
-        WHERE JSON_UNQUOTE(JSON_EXTRACT(e.data, '$.status')) IN ('submitted', 'completed')
-        GROUP BY g.title
-        `
-      );
+      // Ambil statistik grup (total user, submitter_count per grup)
+      const [groupStats] = await db.sequelize.query(`
+      SELECT 
+        g.title AS \`group\`,
+        COUNT(DISTINCT ug.userId) AS total_user,
+        COUNT(DISTINCT CASE 
+          WHEN JSON_UNQUOTE(JSON_EXTRACT(e.data, '$.status')) IN ('submitted', 'completed') THEN e.userId 
+        END) AS submitter_count
+      FROM \`groups\` g
+      JOIN user_groups ug ON g.groupId = ug.groupId
+      LEFT JOIN exams e ON e.userId = ug.userId
+      GROUP BY g.title
+    `);
 
       const groupData = groupStats.map((stat: any) => ({
         group: stat.group,
-        total: stat.total,
+        total: stat.total_user,
         submitter: stat.submitter_count,
       }));
 
+      // Hitung progress grup
       const groupProgress = groupData.map((data) => {
         const progress =
           data.total > 0 ? (data.submitter / data.total) * 100 : 0;
@@ -209,6 +209,26 @@ class ProgressService {
 
       const runningCourseIds = runningCourses.map((c: any) => c.courseId);
       const runningTryoutIds = runningTryouts.map((t: any) => t.tryoutId);
+
+      const averageScoresPerTryout = await db.sequelize.query(
+        `
+        SELECT 
+          JSON_UNQUOTE(JSON_EXTRACT(e.data, '$.tryoutSectionTitle')) AS tryout_title,
+          ROUND(AVG(CAST(JSON_UNQUOTE(JSON_EXTRACT(e.data, '$.scores')) AS DECIMAL(10,2))), 2) AS average_score_users
+        FROM exams e
+        WHERE 
+          JSON_UNQUOTE(JSON_EXTRACT(e.data, '$.status')) IN ('submitted', 'completed')
+          AND JSON_UNQUOTE(JSON_EXTRACT(e.data, '$.tryoutId')) IN (:runningTryoutIds)
+        GROUP BY tryout_title
+        ORDER BY average_score_users DESC
+        `,
+        {
+          replacements: {
+            runningTryoutIds,
+          },
+          type: QueryTypes.SELECT,
+        }
+      );
 
       const exams: any[] = await db.sequelize.query(
         `
@@ -265,6 +285,7 @@ class ProgressService {
         totalExamPossible: runningCourseIds.length + runningTryoutIds.length,
         totalExamCompleted: exams.length,
         groupProgress,
+        averageScoresPerTryout,
       };
 
       return progressSummary;

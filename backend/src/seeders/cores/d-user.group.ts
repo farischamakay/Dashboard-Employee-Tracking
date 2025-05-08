@@ -13,9 +13,15 @@ export default {
       `SELECT groupId FROM groups WHERE active = 1;`
     );
 
-    // Membuat kombinasi user dan group menggunakan flatMap untuk meratakan array
+    // Membuat kombinasi user dan group, dengan maksimal 3 group per user
     const user_groups = users[0].flatMap((user: any) => {
-      return groups[0].map((group: any) => ({
+      // Mengacak group terlebih dahulu
+      const shuffledGroups = groups[0].sort(() => 0.5 - Math.random());
+
+      // Ambil maksimal 3 group
+      const selectedGroups = shuffledGroups.slice(0, 3);
+
+      return selectedGroups.map((group: any) => ({
         userGroupId: uuidv4(),
         userId: user.userId,
         groupId: group.groupId,

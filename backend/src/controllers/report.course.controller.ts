@@ -37,7 +37,7 @@ class ReportController {
     console.log("Cleaned productId:", userId);
 
     try {
-      const userProgress = await ProgressService.getProgress(userId);
+      const userProgress = await ProgressService.getProgressById(userId);
       res.status(200).json({
         status: "Success",
         message: "Successfully get list running exams",

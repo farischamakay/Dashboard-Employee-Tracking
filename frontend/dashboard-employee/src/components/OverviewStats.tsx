@@ -1,5 +1,5 @@
 import { Card, CardContent } from "../components/ui/card";
-import type { Employee } from "../store/useEmployeeStore";
+// import type { Employee } from "../store/useEmployeeStore";
 import { Users, Award, BookOpen } from "lucide-react";
 import {
   PieChart,
@@ -13,47 +13,42 @@ import {
   CartesianGrid,
   Tooltip,
 } from "recharts";
+import type { Progress } from "../store/useRealEmployeeStore";
 
 interface OverviewStatsProps {
-  employees: Employee[];
+  employees: Progress;
 }
 
 export default function OverviewStats({ employees }: OverviewStatsProps) {
   // Calculate overall stats
-  const totalEmployees = employees.length;
-  const avgCompletionRate =
-    employees.reduce((sum, emp) => sum + emp.completionRate, 0) /
-    totalEmployees;
-  const avgScore =
-    employees.reduce((sum, emp) => sum + emp.averageScore, 0) / totalEmployees;
+  const totalEmployees = employees.totalUser;
+  const avgCompletionRate = employees.completion;
+  const avgScore = employees.averageQuizScore;
+  const totalGroups = employees.totalGroups;
+
+  const performanceTrendData = employees.averageScoresPerTryout;
 
   // const topPerformers = [...employees]
   //   .sort((a, b) => b.averageScore - a.averageScore)
   //   .slice(0, 3);
 
   // Department data for pie chart
-  const departmentData = employees.reduce(
-    (acc: Record<string, number>, emp) => {
-      acc[emp.department] = (acc[emp.department] || 0) + 1;
-      return acc;
-    },
-    {}
-  );
+  const departmentData = employees.groupProgress;
 
-  const pieData = Object.entries(departmentData).map(([name, value]) => ({
-    name,
-    value,
+  const pieData = departmentData.map((item) => ({
+    name: item.group,
+    value: item.submitter,
   }));
 
   const COLORS = ["#6366f1", "#10b981", "#f59e0b", "#ec4899", "#8b5cf6"];
 
   // Performance trend data
-  const performanceTrendData = [
-    { name: "Course 1", avgScore: 82, completion: 30 },
-    { name: "Course 2", avgScore: 85, completion: 45 },
-    { name: "Course 3", avgScore: 87, completion: 60 },
-    { name: "Course 4", avgScore: 90, completion: 78 },
-  ];
+  // const performanceTrendData = [
+  //   { name: "Course 1", avgScore: 82, completion: 30 },
+  //   { name: "Course 2", avgScore: 85, completion: 45 },
+  //   { name: "Course 3", avgScore: 87, completion: 60 },
+  //   { name: "Course 4", avgScore: 90, completion: 78 },
+  // ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
@@ -80,9 +75,7 @@ export default function OverviewStats({ employees }: OverviewStatsProps) {
               <p className="text-sm font-medium text-muted-foreground">
                 Avg. Completion
               </p>
-              <p className="text-3xl font-bold">
-                {avgCompletionRate.toFixed(1)}%
-              </p>
+              <p className="text-3xl font-bold">{avgCompletionRate}%</p>
             </div>
             <div className="bg-green-100 p-2 rounded-lg">
               <BookOpen className="h-5 w-5 text-green-600" />
@@ -98,7 +91,7 @@ export default function OverviewStats({ employees }: OverviewStatsProps) {
               <p className="text-sm font-medium text-muted-foreground">
                 Avg. Quiz Score
               </p>
-              <p className="text-3xl font-bold">{avgScore.toFixed(1)}%</p>
+              <p className="text-3xl font-bold">{avgScore}%</p>
             </div>
             <div className="bg-amber-100 p-2 rounded-lg">
               <Award className="h-5 w-5 text-amber-600" />
@@ -112,16 +105,9 @@ export default function OverviewStats({ employees }: OverviewStatsProps) {
           <div className="flex justify-between items-start">
             <div>
               <p className="text-sm font-medium text-muted-foreground">
-                Active Courses
+                Total Groups
               </p>
-              <p className="text-3xl font-bold">
-                {employees.reduce(
-                  (sum, emp) =>
-                    sum +
-                    emp.courses.filter((course) => !course.completed).length,
-                  0
-                )}
-              </p>
+              <p className="text-3xl font-bold">{totalGroups}</p>
             </div>
             <div className="bg-indigo-100 p-2 rounded-lg">
               <BarChart className="h-5 w-5 text-indigo-600" />
@@ -132,8 +118,8 @@ export default function OverviewStats({ employees }: OverviewStatsProps) {
 
       <Card className="md:col-span-2">
         <CardContent className="pt-6">
-          <h3 className="font-semibold mb-4">Department Distribution</h3>
-          <div className="h-[220px]">
+          <h3 className="font-semibold mb-4">Groups Performance</h3>
+          <div className="h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -174,35 +160,35 @@ export default function OverviewStats({ employees }: OverviewStatsProps) {
               >
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis
-                  dataKey="name"
+                  dataKey="tryout_title"
                   angle={-45}
                   textAnchor="end"
                   height={70}
-                  tick={{ fontSize: 12 }}
+                  tick={{ fontSize: 10, width: 50 }}
                 />
                 <YAxis
                   domain={[0, 100]}
                   label={{
-                    value: "Score (%)",
+                    value: "Avg. Tryout Users (%)",
                     angle: -90,
                     position: "insideLeft",
                     style: { textAnchor: "middle" },
                   }}
                 />
                 <Tooltip
-                  formatter={(value, name, props) => [
+                  formatter={(value, tryout_title, props) => [
                     `${value}%`,
-                    `${props.payload.name}`,
+                    `${props.payload.tryout_title}`,
                   ]}
                 />
-                <Bar dataKey="avgScore" radius={[4, 4, 0, 0]}>
+                <Bar dataKey="average_score_users" radius={[4, 4, 0, 0]}>
                   {performanceTrendData.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={
-                        entry.avgScore >= 90
+                        entry.average_score_users >= 90
                           ? "#10b981"
-                          : entry.avgScore >= 75
+                          : entry.average_score_users >= 75
                           ? "#6366f1"
                           : "#f59e0b"
                       }
