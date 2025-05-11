@@ -1,6 +1,6 @@
 import ProgressService from "../services/progress.all.service.js";
-import GenerateReportService from "src/services/generate.report.service.js";
-import RunningProgressService from "src/services/progress.running.service.js";
+import GenerateReportService from "../services/generate.report.service.js";
+import RunningProgressService from "../services/progress.running.service.js";
 class ReportController {
     async getAllCourses(req, res) {
         try {

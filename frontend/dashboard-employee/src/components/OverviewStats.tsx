@@ -1,6 +1,6 @@
 import { Card, CardContent } from "../components/ui/card";
 // import type { Employee } from "../store/useEmployeeStore";
-import { Users, Award, BookOpen } from "lucide-react";
+import { Users, Award, BookOpen, Building2 } from "lucide-react";
 import {
   PieChart,
   BarChart,
@@ -28,11 +28,6 @@ export default function OverviewStats({ employees }: OverviewStatsProps) {
 
   const performanceTrendData = employees.averageScoresPerTryout;
 
-  // const topPerformers = [...employees]
-  //   .sort((a, b) => b.averageScore - a.averageScore)
-  //   .slice(0, 3);
-
-  // Department data for pie chart
   const departmentData = employees.groupProgress;
 
   const pieData = departmentData.map((item) => ({
@@ -41,14 +36,6 @@ export default function OverviewStats({ employees }: OverviewStatsProps) {
   }));
 
   const COLORS = ["#6366f1", "#10b981", "#f59e0b", "#ec4899", "#8b5cf6"];
-
-  // Performance trend data
-  // const performanceTrendData = [
-  //   { name: "Course 1", avgScore: 82, completion: 30 },
-  //   { name: "Course 2", avgScore: 85, completion: 45 },
-  //   { name: "Course 3", avgScore: 87, completion: 60 },
-  //   { name: "Course 4", avgScore: 90, completion: 78 },
-  // ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
@@ -110,7 +97,7 @@ export default function OverviewStats({ employees }: OverviewStatsProps) {
               <p className="text-3xl font-bold">{totalGroups}</p>
             </div>
             <div className="bg-indigo-100 p-2 rounded-lg">
-              <BarChart className="h-5 w-5 text-indigo-600" />
+              <Building2 className="h-5 w-5 text-indigo-600" />
             </div>
           </div>
         </CardContent>

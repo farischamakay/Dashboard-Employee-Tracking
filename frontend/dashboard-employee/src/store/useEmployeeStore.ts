@@ -16,13 +16,6 @@ export interface Course {
   quizzes: Quiz[];
 }
 
-interface ExportStore {
-  exportBy: "all" | "users" | "groups";
-  fileName: string;
-  setExportBy: (value: "all" | "users" | "groups") => void;
-  setFileName: (name: string) => void;
-}
-
 export interface Employee {
   id: number;
   name: string;
@@ -42,6 +35,11 @@ interface EmployeeState {
   setSelectedEmployee: (employee: Employee | null) => void;
   filterText: string;
   setFilterText: (text: string) => void;
+  // Pagination
+  currentPage: number;
+  itemsPerPage: number;
+  setCurrentPage: (page: number) => void;
+  setItemsPerPage: (count: number) => void;
 }
 
 // Mock data for our employees
@@ -348,11 +346,9 @@ export const useEmployeeStore = create<EmployeeState>((set) => ({
   setSelectedEmployee: (employee) => set({ selectedEmployee: employee }),
   filterText: "",
   setFilterText: (text) => set({ filterText: text }),
-}));
-
-export const useExportStore = create<ExportStore>((set) => ({
-  exportBy: "users",
-  fileName: "",
-  setExportBy: (value) => set({ exportBy: value }),
-  setFileName: (name) => set({ fileName: name }),
+  // Pagination default values
+  currentPage: 1,
+  itemsPerPage: 4,
+  setCurrentPage: (page) => set({ currentPage: page }),
+  setItemsPerPage: (count) => set({ itemsPerPage: count }),
 }));

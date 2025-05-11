@@ -4,6 +4,14 @@ import {
   useRunningCourseStore,
   useRunningTryoutStore,
 } from "../store/useRealEmployeeStore";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "../components/ui/pagination";
 import DashboardHeader from "../components/DashboardHeader";
 import EmployeeCard from "../components/EmployeeCard";
 import EmployeeOverview from "../components/EmployeeOverview";
@@ -13,7 +21,7 @@ import ExportSection from "../components/ExportSection";
 import OverviewStats from "../components/OverviewStats";
 import { Input } from "../components/ui/input";
 import { Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "../components/ui/sonner";
 
 const Index = () => {
@@ -27,7 +35,13 @@ const Index = () => {
   const { listRunningTryouts, fetchRunningTryouts } = useRunningTryoutStore();
 
   const [isMobile, setIsMobile] = useState(false);
-  const { filterText, setFilterText } = useEmployeeStore();
+  const {
+    filterText,
+    setFilterText,
+    currentPage,
+    itemsPerPage,
+    setCurrentPage,
+  } = useEmployeeStore();
 
   // Check if mobile screen on mount and resize
   useEffect(() => {
@@ -68,21 +82,36 @@ const Index = () => {
     });
   }, [fetchRunningTryouts]);
 
-  // Filter employees
-  const filteredEmployees = employees.filter(
-    (employee) =>
-      employee.name.toLowerCase().includes(filterText.toLowerCase()) ||
-      employee.position.toLowerCase().includes(filterText.toLowerCase()) ||
-      employee.department.toLowerCase().includes(filterText.toLowerCase())
-  );
+  const filteredEmployees = useMemo(() => {
+    return employees.filter(
+      (employee) =>
+        employee.name.toLowerCase().includes(filterText.toLowerCase()) ||
+        employee.position.toLowerCase().includes(filterText.toLowerCase()) ||
+        employee.department.toLowerCase().includes(filterText.toLowerCase())
+    );
+  }, [employees, filterText]);
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
+  const paginatedEmployees = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredEmployees.slice(startIndex, endIndex);
+  }, [filteredEmployees, currentPage, itemsPerPage]);
+
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
 
   // Select first employee on load if none selected
   useEffect(() => {
-    if (filteredEmployees.length > 0 && !selectedEmployee) {
-      setSelectedEmployee(filteredEmployees[0]);
+    if (paginatedEmployees.length > 0 && !selectedEmployee) {
+      setSelectedEmployee(paginatedEmployees[0]);
     }
-  }, [filteredEmployees, selectedEmployee, setSelectedEmployee]);
-
+  }, [paginatedEmployees, selectedEmployee, setSelectedEmployee]);
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
@@ -94,7 +123,7 @@ const Index = () => {
 
         <TryoutOverview tryouts={listRunningTryouts}></TryoutOverview>
 
-        <ExportSection></ExportSection>
+        <ExportSection reports={progress}></ExportSection>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Employee List */}
@@ -121,7 +150,7 @@ const Index = () => {
                 isMobile ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-1" : ""
               }`}
             >
-              {filteredEmployees.map((employee) => (
+              {paginatedEmployees.map((employee) => (
                 <EmployeeCard
                   key={employee.id}
                   employee={employee}
@@ -136,6 +165,46 @@ const Index = () => {
                 </div>
               )}
             </div>
+
+            {/* Pagination */}
+            {filteredEmployees.length > 0 && (
+              <Pagination className="mt-6">
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      className={
+                        currentPage === 1
+                          ? "pointer-events-none opacity-50"
+                          : ""
+                      }
+                    />
+                  </PaginationItem>
+
+                  {Array.from({ length: totalPages }, (_, i) => (
+                    <PaginationItem key={i + 1}>
+                      <PaginationLink
+                        onClick={() => handlePageChange(i + 1)}
+                        isActive={currentPage === i + 1}
+                      >
+                        {i + 1}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      className={
+                        currentPage === totalPages
+                          ? "pointer-events-none opacity-50"
+                          : ""
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
           </div>
 
           {/* Employee Detail */}

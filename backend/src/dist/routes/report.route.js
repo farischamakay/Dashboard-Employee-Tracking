@@ -1,5 +1,5 @@
 import express from "express";
-import ReportController from "../controllers/report.course.controller.js";
+import ReportController from "../controllers/report.controller.js";
 const router = express.Router();
 router.get("/running-courses", ReportController.getAllCourses);
 router.get("/running-tryout-sections", ReportController.getAllTryouts);

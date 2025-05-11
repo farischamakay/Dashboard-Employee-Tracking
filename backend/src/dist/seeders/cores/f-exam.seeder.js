@@ -5,6 +5,10 @@ function getRandomStatus() {
     const randomIndex = Math.floor(Math.random() * statuses.length);
     return statuses[randomIndex];
 }
+function generateScore() {
+    const raw = Math.floor(Math.random() * 9) + 12; // 12–20
+    return raw * 5; // 60–100, kelipatan 5
+}
 // Fungsi untuk membuat soal
 function createQuestion(tryoutId) {
     return {
@@ -34,7 +38,7 @@ function createExam(userId, tryoutId, tryoutSectionTitle) {
         createdAt: now,
         updatedAt: endTime,
         data: JSON.stringify({
-            scores: 90,
+            scores: generateScore(),
             status: getRandomStatus(), // Menetapkan status acak
             platform: "website",
             duration: 36000000,

@@ -1,5 +1,5 @@
 import db from "../models/index.js";
-class RunningProgressService {
+class ExamsProgressService {
     async getRunningCourses() {
         try {
             const [runningCourses] = await db.sequelize.query(`
@@ -29,4 +29,4 @@ class RunningProgressService {
         }
     }
 }
-export default new RunningProgressService();
+export default new ExamsProgressService();

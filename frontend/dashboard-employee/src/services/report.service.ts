@@ -2,6 +2,8 @@ import type {
   Progress,
   RunningCourseList,
   RunningTryoutList,
+  ReportData,
+  ExportFormData,
 } from "../store/useRealEmployeeStore";
 
 const API_URL = "http://localhost:3000/api";
@@ -13,6 +15,7 @@ interface ApiResponse<T> {
   progressUsers?: T;
   listRunningCourses?: T;
   listRunningTryouts?: T;
+  report?: T;
 }
 
 export const getProgressAll = async (): Promise<Progress> => {
@@ -66,5 +69,41 @@ export const getRunningTryouts = async (): Promise<RunningTryoutList[]> => {
   } catch (e) {
     console.error("Error Fetching Progress:", e);
     throw new Error("Failed to load progress. Please try again later.");
+  }
+};
+
+export const generateReports = async (
+  referenceData: ExportFormData
+): Promise<ReportData> => {
+  try {
+    const response = await fetch(
+      `${API_URL}/reports/generate-report/progress`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          referenceType: referenceData.referenceType,
+          referenceId: referenceData.referenceId,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to generate report");
+    }
+
+    const data: ApiResponse<ReportData> = await response.json(); // parse JSON response into native JavaScript objects>
+    if (!data.report) {
+      throw new Error("Progress data is missing");
+    }
+    console.log("Calling API generate for progress...", referenceData);
+    console.log("Calling API generate for progress...", data);
+    return data.report || [];
+  } catch (er) {
+    console.error("Error Fetching Progress:", er);
+    throw new Error("Failed to load progress. Please try again later. ");
   }
 };

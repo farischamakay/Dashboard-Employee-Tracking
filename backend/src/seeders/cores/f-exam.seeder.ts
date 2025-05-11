@@ -8,6 +8,11 @@ function getRandomStatus(): string {
   return statuses[randomIndex];
 }
 
+function generateScore(): number {
+  const raw = Math.floor(Math.random() * 9) + 12; // 12–20
+  return raw * 5; // 60–100, kelipatan 5
+}
+
 // Fungsi untuk membuat soal
 function createQuestion(tryoutId: string) {
   return {
@@ -43,7 +48,7 @@ function createExam(
     createdAt: now,
     updatedAt: endTime,
     data: JSON.stringify({
-      scores: 90,
+      scores: generateScore(),
       status: getRandomStatus(), // Menetapkan status acak
       platform: "website",
       duration: 36000000,

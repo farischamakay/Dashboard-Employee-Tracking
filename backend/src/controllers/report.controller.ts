@@ -1,10 +1,13 @@
 import { Request, Response } from "express";
-import ProgressService from "../services/progress.running.service.js";
+import ProgressService from "../services/progress.all.service.js";
+import GenerateReportService from "../services/generate.report.service.js";
+import RunningProgressService from "../services/progress.running.service.js";
 
 class ReportController {
   async getAllCourses(req: Request, res: Response): Promise<void> {
     try {
-      const listRunningCourses = await ProgressService.getRunningCourses();
+      const listRunningCourses =
+        await RunningProgressService.getRunningCourses();
       res.status(200).json({
         status: "Success",
         message: "Successfully get list running courses",
@@ -18,7 +21,7 @@ class ReportController {
   async getAllTryouts(req: Request, res: Response): Promise<void> {
     try {
       const listRunningTryouts =
-        await ProgressService.getRunningTryoutSections();
+        await RunningProgressService.getRunningTryoutSections();
       res.status(200).json({
         status: "Success",
         message: "Successfully get list running tryouts",
@@ -63,7 +66,7 @@ class ReportController {
 
   async generateReport(req: Request, res: Response): Promise<void> {
     try {
-      const report = await ProgressService.generateReport(
+      const report = await GenerateReportService.generateReport(
         req.body.referenceType,
         req.body.referenceId
       );
