@@ -1,5 +1,5 @@
 import type {
-  Progress,
+  ProgressUser,
   RunningCourseList,
   RunningTryoutList,
   ReportData,
@@ -18,13 +18,13 @@ interface ApiResponse<T> {
   report?: T;
 }
 
-export const getProgressAll = async (): Promise<Progress> => {
+export const getProgressAll = async (): Promise<ProgressUser> => {
   try {
     const response = await fetch(`${API_URL}/reports/progress`);
     if (!response.ok) {
       throw new Error("Failed to get progress");
     }
-    const data: ApiResponse<Progress> = await response.json();
+    const data: ApiResponse<ProgressUser> = await response.json();
     if (!data.progressUsers) {
       throw new Error("Progress data is missing");
     }

@@ -4,7 +4,7 @@ import {
   useExportStore,
   useExportDataEmploye,
 } from "../store/useRealEmployeeStore";
-import type { Progress } from "../store/useRealEmployeeStore";
+import type { ProgressUser } from "../store/useRealEmployeeStore";
 import {
   Card,
   CardContent,
@@ -16,7 +16,7 @@ import { Button } from "./ui/button";
 import { exportToExcel } from "../utils/exportToExcelUtils";
 
 interface ExportSectionProps {
-  reports: Progress;
+  reports: ProgressUser;
 }
 
 export default function ExportSection({ reports }: ExportSectionProps) {

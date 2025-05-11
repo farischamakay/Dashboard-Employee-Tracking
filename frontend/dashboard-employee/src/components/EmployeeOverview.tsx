@@ -6,7 +6,6 @@ import {
 } from "../components/ui/card";
 import { Progress } from "../components/ui/progress";
 import { Separator } from "../components/ui/separator";
-import type { Employee } from "../store/useEmployeeStore";
 import { ChartBar, Award, GraduationCap } from "lucide-react";
 import {
   BarChart,
@@ -18,33 +17,36 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
+import type { UserData } from "../store/useRealEmployeeStore";
 
 interface EmployeeOverviewProps {
-  employee: Employee;
+  employee: UserData;
 }
 
 export default function EmployeeOverview({ employee }: EmployeeOverviewProps) {
-  const totalQuizzes = employee.courses.reduce(
-    (acc, course) => acc + course.quizzes.length,
-    0
-  );
-  const completedCourses = employee.courses.filter(
-    (course) => course.completed
-  ).length;
-  const totalCourses = employee.courses.length;
+  const totalQuizzes = employee.examPossible;
+  const completedCourses = employee.examCompleted;
+  const totalCourses = employee.examPossible;
 
   // Format quiz data for the chart
-  const quizData = employee.courses.flatMap((course) =>
-    course.quizzes.map((quiz) => ({
-      name:
-        quiz.title.length > 15
-          ? quiz.title.substring(0, 15) + "..."
-          : quiz.title,
-      score: quiz.score,
-      fullName: quiz.title,
-      course: course.title,
-    }))
-  );
+  // const quizData = employee.courses.flatMap((course) =>
+  //   course.quizzes.map((quiz) => ({
+  //     name:
+  //       quiz.title.length > 15
+  //         ? quiz.title.substring(0, 15) + "..."
+  //         : quiz.title,
+  //     score: quiz.score,
+  //     fullName: quiz.title,
+  //     course: course.title,
+  //   }))
+  // );
+  const quizData = employee.examList.map((quiz) => ({
+    name:
+      quiz.title.length > 15 ? quiz.title.substring(0, 15) + "..." : quiz.title,
+    score: quiz.score,
+    fullName: quiz.title,
+    course: quiz.title,
+  }));
 
   return (
     <div className="grid grid-cols-1 gap-6">
@@ -55,7 +57,7 @@ export default function EmployeeOverview({ employee }: EmployeeOverviewProps) {
               {employee.name}
             </CardTitle>
             <div className="text-sm text-muted-foreground">
-              {employee.position} • {employee.department}
+              {employee.gruppTitleUser} • {employee.gruppTitleUser}
             </div>
           </div>
         </CardHeader>
@@ -71,7 +73,7 @@ export default function EmployeeOverview({ employee }: EmployeeOverviewProps) {
                   {completedCourses}/{totalCourses}
                 </div>
               </div>
-              <Progress value={employee.completionRate} className="h-2 mt-2" />
+              <Progress value={employee.completion} className="h-2 mt-2" />
             </div>
 
             <div className="flex flex-col p-3 bg-gray-50 rounded-lg">
@@ -81,10 +83,13 @@ export default function EmployeeOverview({ employee }: EmployeeOverviewProps) {
               <div className="mt-2 flex items-center gap-2">
                 <Award className="h-5 w-5 text-green-500" />
                 <div className="text-2xl font-bold">
-                  {employee.averageScore}%
+                  {employee.averageQuizScore}%
                 </div>
               </div>
-              <Progress value={employee.averageScore} className="h-2 mt-2" />
+              <Progress
+                value={employee.averageQuizScore}
+                className="h-2 mt-2"
+              />
             </div>
 
             <div className="flex flex-col p-3 bg-gray-50 rounded-lg">
@@ -158,57 +163,36 @@ export default function EmployeeOverview({ employee }: EmployeeOverviewProps) {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {employee.courses.map((course) => (
+            {employee.examList.map((course) => (
               <div key={course.id} className="bg-gray-50 p-4 rounded-lg">
-                <div className="flex justify-between items-center mb-3">
-                  <h4 className="font-medium">{course.title}</h4>
-                  <div className="flex items-center">
-                    {course.completed ? (
-                      <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
-                        Completed
-                      </span>
-                    ) : (
-                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">
-                        In Progress
-                      </span>
-                    )}
-                    <span className="ml-2 text-sm font-medium">
-                      {course.progress}%
-                    </span>
-                  </div>
-                </div>
-                <Progress value={course.progress} />
-
-                {course.quizzes.length > 0 && (
+                {course.score > 0 && (
                   <div className="mt-3">
                     <p className="text-sm font-medium text-gray-500 mb-2">
                       Quizzes
                     </p>
                     <div className="space-y-2">
-                      {course.quizzes.map((quiz) => (
-                        <div
-                          key={quiz.id}
-                          className="flex justify-between items-center bg-white p-2 rounded text-sm"
-                        >
-                          <span>{quiz.title}</span>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-gray-500">
-                              {quiz.completedAt}
-                            </span>
-                            <span
-                              className={`font-medium ${
-                                quiz.score >= 90
-                                  ? "text-green-600"
-                                  : quiz.score >= 75
-                                  ? "text-blue-600"
-                                  : "text-amber-600"
-                              }`}
-                            >
-                              {quiz.score}/{quiz.maxScore}
-                            </span>
-                          </div>
+                      <div
+                        key={course.id}
+                        className="flex justify-between items-center bg-white p-2 rounded text-sm"
+                      >
+                        <span>{course.title}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-gray-500">
+                            {course.status}
+                          </span>
+                          <span
+                            className={`font-medium ${
+                              course.score >= 90
+                                ? "text-green-600"
+                                : course.score >= 75
+                                ? "text-blue-600"
+                                : "text-amber-600"
+                            }`}
+                          >
+                            {course.score}/{100}
+                          </span>
                         </div>
-                      ))}
+                      </div>
                     </div>
                   </div>
                 )}

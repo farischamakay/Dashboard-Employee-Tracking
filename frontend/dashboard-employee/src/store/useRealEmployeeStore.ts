@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   getProgressAll,
   getRunningCourses,
@@ -40,6 +41,15 @@ export interface ExamList {
   status: string;
   scores: number;
 }
+
+export interface ExamListUser {
+  id: string;
+  title: string;
+  type: string;
+  status: string;
+  score: number;
+}
+
 export interface EmployeeData {
   id: string;
   name: string;
@@ -78,6 +88,20 @@ export interface ReportData {
   users: EmployeeData[];
 }
 
+export interface UserData {
+  id: string;
+  name: string;
+  username: string;
+  email: string;
+  phoneNumber: string;
+  gruppTitleUser: string;
+  averageQuizScore: number;
+  examCompleted: number;
+  examPossible: number;
+  completion: number;
+  examList: ExamListUser[];
+}
+
 interface ExportStore {
   exportBy: "user" | "group";
   fileName: string;
@@ -92,19 +116,29 @@ export const useExportStore = create<ExportStore>((set) => ({
   setGroupName: (name) => set({ fileName: name }),
 }));
 
-export interface Progress {
+export interface ProgressUser {
   totalUser: number;
   completion: number;
   averageQuizScore: number;
   totalGroups: number;
   groupProgress: GroupProgress[];
   averageScoresPerTryout: TopTryout[];
+  users: UserData[];
 }
 
 interface ProgressState {
-  progress: Progress;
+  progress: ProgressUser;
   isLoading: boolean;
   error: string | null;
+  selectedEmployee: UserData | null;
+  setSelectedEmployee: (employee: UserData | null) => void;
+  filterText: string;
+  setFilterText: (text: string) => void;
+  // Pagination
+  currentPage: number;
+  itemsPerPage: number;
+  setCurrentPage: (page: number) => void;
+  setItemsPerPage: (count: number) => void;
   fetchAllProgress: () => Promise<void>;
 }
 
@@ -130,9 +164,20 @@ export const useProgressStore = create<ProgressState>((set) => ({
     totalGroups: 0,
     groupProgress: [],
     averageScoresPerTryout: [],
+    users: [],
   },
   isLoading: false,
   error: null,
+  selectedEmployee: null,
+  setSelectedEmployee: (progressUser) =>
+    set({ selectedEmployee: progressUser }),
+  filterText: "",
+  setFilterText: (text) => set({ filterText: text }),
+  // Pagination
+  currentPage: 1,
+  itemsPerPage: 4,
+  setCurrentPage: (page) => set({ currentPage: page }),
+  setItemsPerPage: (count) => set({ itemsPerPage: count }),
   fetchAllProgress: async () => {
     set({ isLoading: true, error: null });
     try {

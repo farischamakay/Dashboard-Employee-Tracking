@@ -1,23 +1,21 @@
 import { Card } from "../components/ui/card";
 import { Progress } from "../components/ui/progress";
-import type { Employee } from "../store/useEmployeeStore";
-import { ChartLine, CircleCheck, User } from "lucide-react";
+import { ChartLine, CircleCheck } from "lucide-react";
+import type { UserData } from "../store/useRealEmployeeStore";
 
 interface EmployeeCardProps {
-  employee: Employee;
+  progressUser: UserData;
   onClick: () => void;
   isSelected: boolean;
 }
 
 export default function EmployeeCard({
-  employee,
+  progressUser,
   onClick,
   isSelected,
 }: EmployeeCardProps) {
-  const totalCourses = employee.courses.length;
-  const completedCourses = employee.courses.filter(
-    (course) => course.completed
-  ).length;
+  const totalCourses = progressUser.examPossible;
+  const completedCourses = progressUser.examCompleted;
 
   return (
     <Card
@@ -28,27 +26,23 @@ export default function EmployeeCard({
     >
       <div className="flex items-center gap-3">
         <div className="relative">
-          {employee.avatar ? (
-            <img
-              src={employee.avatar}
-              alt={employee.name}
-              className="w-12 h-12 rounded-full object-cover"
-            />
-          ) : (
-            <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
-              <User className="w-6 h-6 text-gray-500" />
-            </div>
-          )}
-          {employee.completionRate === 100 && (
+          <img
+            src="https://i.pravatar.cc/150?img=9"
+            alt={progressUser.name}
+            className="w-12 h-12 rounded-full object-cover"
+          />
+          {progressUser.completion === 100 && (
             <CircleCheck className="absolute -bottom-1 -right-1 text-green-500 w-5 h-5 bg-white rounded-full" />
           )}
         </div>
 
         <div className="overflow-hidden">
           <h3 className="font-medium text-gray-900 truncate">
-            {employee.name}
+            {progressUser.name}
           </h3>
-          <p className="text-sm text-gray-500 truncate">{employee.position}</p>
+          <p className="text-sm text-gray-500 truncate">
+            {progressUser.gruppTitleUser}
+          </p>
         </div>
       </div>
 
@@ -60,7 +54,7 @@ export default function EmployeeCard({
           </span>
         </div>
         <Progress
-          value={employee.completionRate}
+          value={progressUser.completion}
           className="h-2 bg-gray-200"
           indicatorClassName="bg-blue-500"
         />
@@ -71,7 +65,7 @@ export default function EmployeeCard({
         <span className="text-gray-600">
           Avg. Score:{" "}
           <span className="font-medium text-gray-800">
-            {employee.averageScore}%
+            {progressUser.averageQuizScore}%
           </span>
         </span>
       </div>

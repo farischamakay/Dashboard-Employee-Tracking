@@ -13,10 +13,10 @@ import {
   CartesianGrid,
   Tooltip,
 } from "recharts";
-import type { Progress } from "../store/useRealEmployeeStore";
+import type { ProgressUser } from "../store/useRealEmployeeStore";
 
 interface OverviewStatsProps {
-  employees: Progress;
+  employees: ProgressUser;
 }
 
 export default function OverviewStats({ employees }: OverviewStatsProps) {

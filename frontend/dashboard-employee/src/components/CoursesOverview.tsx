@@ -22,20 +22,20 @@ export default function CoursesOverview({
           <CardDescription>Employee currently learning</CardDescription>
         </CardHeader>
         <div className="overflow-x-auto ms-2 mb-6">
-          <div className="flex space-x-6 px-4">
+          <div className="flex space-x-4 px-4">
             {courses.map((course) => {
               const parsedData = JSON.parse(course.data);
               return (
                 <CardContent
                   key={course.courseId}
-                  className="rounded-md border min-w-[16rem] max-w-[16rem] overflow-hidden"
+                  className="rounded-md shadow-xl relative min-w-[16rem] p-0 max-w-[16rem] overflow-hidden"
                 >
                   <img
-                    src="https://img.icons8.com/?size=100&id=113861&format=png&color=000000"
+                    src="https://purdueglobalwriting.center/wp-content/uploads/2020/04/gettyimages-677892870.jpg"
                     alt={course.title}
                     className="h-40 w-full object-cover"
                   />
-                  <div>
+                  <div className="p-2">
                     <h3 className="text-lg font-semibold">{course.title}</h3>
                     <p className="text-sm text-muted-foreground mt-1">
                       Start Date :{" "}

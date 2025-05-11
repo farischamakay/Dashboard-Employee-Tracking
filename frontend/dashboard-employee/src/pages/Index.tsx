@@ -1,4 +1,3 @@
-import { useEmployeeStore } from "../store/useEmployeeStore";
 import {
   useProgressStore,
   useRunningCourseStore,
@@ -25,8 +24,7 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "../components/ui/sonner";
 
 const Index = () => {
-  const { employees, selectedEmployee, setSelectedEmployee } =
-    useEmployeeStore();
+  const { selectedEmployee, setSelectedEmployee } = useProgressStore();
 
   const { progress, fetchAllProgress } = useProgressStore();
 
@@ -41,7 +39,7 @@ const Index = () => {
     currentPage,
     itemsPerPage,
     setCurrentPage,
-  } = useEmployeeStore();
+  } = useProgressStore();
 
   // Check if mobile screen on mount and resize
   useEffect(() => {
@@ -83,13 +81,12 @@ const Index = () => {
   }, [fetchRunningTryouts]);
 
   const filteredEmployees = useMemo(() => {
-    return employees.filter(
+    return progress.users.filter(
       (employee) =>
         employee.name.toLowerCase().includes(filterText.toLowerCase()) ||
-        employee.position.toLowerCase().includes(filterText.toLowerCase()) ||
-        employee.department.toLowerCase().includes(filterText.toLowerCase())
+        employee.username.toLowerCase().includes(filterText.toLowerCase())
     );
-  }, [employees, filterText]);
+  }, [progress, filterText]);
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
@@ -150,12 +147,12 @@ const Index = () => {
                 isMobile ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-1" : ""
               }`}
             >
-              {paginatedEmployees.map((employee) => (
+              {paginatedEmployees.map((progress) => (
                 <EmployeeCard
-                  key={employee.id}
-                  employee={employee}
-                  onClick={() => setSelectedEmployee(employee)}
-                  isSelected={selectedEmployee?.id === employee.id}
+                  key={progress.id}
+                  progressUser={progress}
+                  onClick={() => setSelectedEmployee(progress)}
+                  isSelected={selectedEmployee?.id === progress.id}
                 />
               ))}
 
