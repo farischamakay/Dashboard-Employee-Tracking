@@ -3,7 +3,6 @@ import { QueryTypes } from "sequelize";
 class GenerateReportService {
     async generateReport(referenceType, referenceId) {
         try {
-            // 1. Get active courses and tryouts
             const [runningCourses, runningTryouts] = await Promise.all([
                 this.getRunningCourses(),
                 this.getRunningTryouts(),
@@ -11,11 +10,8 @@ class GenerateReportService {
             const runningCourseIds = runningCourses.map((c) => c.courseId);
             const runningTryoutIds = runningTryouts.map((t) => t.tryoutId);
             const totalPossibleExams = runningCourseIds.length + runningTryoutIds.length;
-            // 2. Get target users based on reference type
             const { targetUsers, groupTitle } = await this.getTargetUsers(referenceType, referenceId);
-            // 3. Process each user's progress
-            const results = await this.processUsersProgress(targetUsers, runningCourseIds, runningTryoutIds);
-            // 4. Calculate overall metrics
+            const results = await this.processUsersProgress(targetUsers, runningCourseIds, runningTryoutIds, referenceType, groupTitle);
             const totalExamCompleted = results.users.reduce((sum, user) => sum + user.examCompleted, 0);
             const totalExamPossible = targetUsers.length * totalPossibleExams;
             const averageCompletion = totalExamPossible > 0
@@ -92,20 +88,24 @@ class GenerateReportService {
         }
         return { targetUsers, groupTitle };
     }
-    async processUsersProgress(targetUsers, runningCourseIds, runningTryoutIds) {
+    async processUsersProgress(targetUsers, runningCourseIds, runningTryoutIds, referenceType, groupTitle) {
         const users = [];
         let totalScore = 0;
         let totalScoreCount = 0;
         for (const user of targetUsers) {
             const exams = await this.getUserExams(user.userId, runningCourseIds, runningTryoutIds);
-            const userGroup = await db.sequelize.query(`SELECT g.title FROM groups g
+            let groupTitleUser = null;
+            // Only fetch user's group if referenceType is not "group"
+            if (referenceType !== "group") {
+                const userGroup = await db.sequelize.query(`SELECT g.title FROM groups g
          JOIN user_groups ug ON g.groupId = ug.groupId
          WHERE ug.userId = :userId
          LIMIT 1`, {
-                replacements: { userId: user.userId },
-                type: QueryTypes.SELECT,
-            });
-            const groupTitleUser = userGroup[0]?.title || null;
+                    replacements: { userId: user.userId },
+                    type: QueryTypes.SELECT,
+                });
+                groupTitleUser = userGroup[0]?.title || null;
+            }
             const totalPossibleExams = runningCourseIds.length + runningTryoutIds.length;
             // Calculate user's average score
             const { averageScore, validScores } = this.calculateUserAverageScore(exams);
@@ -118,7 +118,7 @@ class GenerateReportService {
                 name: user.fullname,
                 email: user.email,
                 contact: user.phoneNumber || "",
-                groupTitleUser,
+                groupTitleUser: referenceType === "group" ? groupTitle : groupTitleUser,
                 examCompleted: exams.length,
                 examPossible: totalPossibleExams,
                 completion: totalPossibleExams > 0

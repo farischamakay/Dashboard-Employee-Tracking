@@ -7,8 +7,25 @@ import {
 } from "./ui/card";
 import type { RunningCourseList } from "../store/useRealEmployeeStore";
 
+import { ClockAlert } from "lucide-react";
+
 interface CoursesOverviewStatsProps {
   courses: RunningCourseList[];
+}
+
+function getCountdown(endDateStr: string): string {
+  const endDate = new Date(endDateStr);
+  const now = new Date();
+  const diffTime = endDate.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays > 0) {
+    return `Kelas akan berakhir ${diffDays} hari lagi`;
+  } else if (diffDays === 0) {
+    return "Berakhir hari ini";
+  } else {
+    return "Sudah berakhir";
+  }
 }
 
 export default function CoursesOverview({
@@ -37,13 +54,26 @@ export default function CoursesOverview({
                   />
                   <div className="p-2">
                     <h3 className="text-lg font-semibold">{course.title}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Start Date :{" "}
-                      {new Date(parsedData.startDate).toDateString()}
-                    </p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      End Date : {new Date(parsedData.endDate).toDateString()}
-                    </p>
+                    <div className="text-sm text-gray-600 space-y-1">
+                      <p>
+                        <span className="font-medium text-gray-800">
+                          Expired date:
+                        </span>{" "}
+                        {new Date(parsedData.endDate).toLocaleDateString(
+                          "id-ID",
+                          {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                          }
+                        )}
+                      </p>
+                    </div>
+
+                    <div className="inline-flex items-center gap-x-1 text-yellow-800 text-sm font-small">
+                      <ClockAlert size={16} className="inline-block" />
+                      {getCountdown(parsedData.endDate)}
+                    </div>
                   </div>
                 </CardContent>
               );

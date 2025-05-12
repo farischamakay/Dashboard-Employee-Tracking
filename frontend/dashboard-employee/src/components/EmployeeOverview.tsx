@@ -4,9 +4,10 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
+import { Button } from "./ui/button";
 import { Progress } from "../components/ui/progress";
 import { Separator } from "../components/ui/separator";
-import { ChartBar, Award, GraduationCap } from "lucide-react";
+import { ChartBar, Award, GraduationCap, FileDown } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -17,29 +18,34 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
-import type { UserData } from "../store/useRealEmployeeStore";
+import {
+  useExportDataEmploye,
+  type UserData,
+} from "../store/useRealEmployeeStore";
+import { exportToExcel } from "../utils/exportToExcelUtils";
 
 interface EmployeeOverviewProps {
   employee: UserData;
 }
 
 export default function EmployeeOverview({ employee }: EmployeeOverviewProps) {
+  const { handleGenerateAndExport } = useExportDataEmploye();
+
   const totalQuizzes = employee.examPossible;
   const completedCourses = employee.examCompleted;
   const totalCourses = employee.examPossible;
 
-  // Format quiz data for the chart
-  // const quizData = employee.courses.flatMap((course) =>
-  //   course.quizzes.map((quiz) => ({
-  //     name:
-  //       quiz.title.length > 15
-  //         ? quiz.title.substring(0, 15) + "..."
-  //         : quiz.title,
-  //     score: quiz.score,
-  //     fullName: quiz.title,
-  //     course: course.title,
-  //   }))
-  // );
+  const handleExportEmployee = async () => {
+    // Implement export logic here
+    const referenceData = {
+      referenceType: "user",
+      referenceId: employee.id,
+    };
+    const result = await handleGenerateAndExport(referenceData);
+    if (result) {
+      exportToExcel(result.users, `${employee.name}_Learning_Report`);
+    }
+  };
   const quizData = employee.examList.map((quiz) => ({
     name:
       quiz.title.length > 15 ? quiz.title.substring(0, 15) + "..." : quiz.title,
@@ -57,8 +63,16 @@ export default function EmployeeOverview({ employee }: EmployeeOverviewProps) {
               {employee.name}
             </CardTitle>
             <div className="text-sm text-muted-foreground">
-              {employee.gruppTitleUser} • {employee.gruppTitleUser}
+              {employee.groupTitle} •
             </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <Button
+              onClick={handleExportEmployee}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex items-center"
+            >
+              <FileDown className="h-4 w-4" /> Export {employee.name} Report
+            </Button>
           </div>
         </CardHeader>
         <CardContent>

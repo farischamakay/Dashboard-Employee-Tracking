@@ -94,7 +94,7 @@ export interface UserData {
   username: string;
   email: string;
   phoneNumber: string;
-  gruppTitleUser: string;
+  groupTitle: string;
   averageQuizScore: number;
   examCompleted: number;
   examPossible: number;

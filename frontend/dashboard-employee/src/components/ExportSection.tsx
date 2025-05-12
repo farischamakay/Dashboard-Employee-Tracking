@@ -23,7 +23,6 @@ export default function ExportSection({ reports }: ExportSectionProps) {
   const { exportBy, fileName, setExportBy, setGroupName } = useExportStore();
   const { handleGenerateAndExport } = useExportDataEmploye();
 
-  // Reset group name when not in group mode
   useEffect(() => {
     if (exportBy !== "group") {
       setGroupName("");
@@ -37,9 +36,6 @@ export default function ExportSection({ reports }: ExportSectionProps) {
     if (exportBy === "group" && fileName) {
       referenceType = "group";
       referenceId = fileName;
-    } else if (exportBy === "user") {
-      referenceType = "user";
-      referenceId = null;
     } else {
       referenceType = null;
       referenceId = null;
@@ -48,15 +44,14 @@ export default function ExportSection({ reports }: ExportSectionProps) {
     const referenceData = { referenceType, referenceId };
 
     const result = await handleGenerateAndExport(referenceData);
-    console.log("Hasil API:", result); // Cek hasil API yang diterima
+    console.log("Hasil API:", result);
     if (result) {
-      console.log("Data untuk Export:", result.users);
       exportToExcel(result.users, "Employee_Learning_Report");
       console.log("Export Button Clicked 2:", {
         exportBy,
         referenceType,
         referenceId,
-        user: result, // pakai result langsung, bukan dari store
+        user: result,
       });
     }
   };

@@ -33,9 +33,9 @@ export default function TryoutOverview({ tryouts }: TryoutOverviewStatsProps) {
                 >
                   <div className="text-center my-6">
                     <h3 className="text-lg font-semibold">{tryout.title}</h3>
-                    <p className="text-sm text-gray-500">
+                    {/* <p className="text-sm text-gray-500">
                       Time Management Subtitle
-                    </p>
+                    </p> */}
                   </div>
 
                   {/* Soal & Durasi */}

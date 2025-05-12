@@ -32,25 +32,6 @@ class ReportController {
     }
   }
 
-  async getUserProgress(req: Request, res: Response): Promise<void> {
-    console.log("Raw productId from params:", req.params.productId);
-
-    // Clean the ID (remove leading colon if present)
-    const userId = req.params.userId.replace(/^:/, "");
-    console.log("Cleaned productId:", userId);
-
-    try {
-      const userProgress = await ProgressService.getProgressById(userId);
-      res.status(200).json({
-        status: "Success",
-        message: "Successfully get list running exams",
-        userProgress,
-      });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  }
-
   async getAllProgressUsers(req: Request, res: Response): Promise<void> {
     try {
       const progressUsers = await ProgressService.getProgressAll();
