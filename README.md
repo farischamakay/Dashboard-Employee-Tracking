@@ -4,7 +4,7 @@ Sistem ini merupakan dashboard HR yang digunakan untuk memonitor performa pelati
 Demo :
 ### 📽️ Demo Video
 
-[![Lihat Video Demo](https://img.shields.io/badge/Watch-Demo%20Video-blue?style=for-the-badge&logo=playstation)](https://media-hosting.imagekit.io/06784817a1bf4002/bandicam%202025-05-13%2000-04-24-428.mp4?Expires=1841677985&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=A4DQeDvCryxDeKc236hsCz-ohnOc6i7QUoK7m-mm0G3KFpqk7MA3TZZAoYdNW0YQ7src8YYDcceOYw2iyLYACw7VzoVzeqDHKXAPZ4u3nUXQ-dDOI8KPY8tI3Z5MbB6PtSZBwpBe45Fo7S-Yj4ww5FmQ-mCUahoZKgX42goPdNeSsXpoTZGemvq16ePV-YIrB1seRefaXvGFAHWxNJN5LAbjSgZ-SXRlnIBE2YmvKetsLIFGudD7pA3DPFZAmeh6QACzuPFpuckSpBb332edlPBMbsgoaKbw-KCRu5cFsvkGIxlfLuOx~K08FcqGYsWguWWWR0FWAROJtA__)
+[![Lihat Video Demo](https://img.shields.io/badge/Watch-Demo%20Video-blue?style=for-the-badge&logo=playstation)](https://media-hosting.imagekit.io/06784817a1bf4002/bandicam%202025-05-13%2000-04-24-428.mp4?Expires=1841677985&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=A4DQe~DvCryxDeKc236hsCz-ohnOc6i7QUoK7m-mm0G3KFpqk7MA3TZ~ZAoYdNW0YQ7src8YYDcceOYw2iyLYACw7VzoVzeqDHKXAPZ4u3nUX~Q-dDOI8KPY8tI3Z5MbB6PtSZBwpBe45Fo7S-Yj4ww5FmQ-mCUahoZ~KgX42goPdNeSsXpoTZGe~mvq16ePV-YIrB1seRefaXvGFAHWxNJN5LAbjSgZ-SXRlnIBE2Y~mvKetsLIFGudD~7pA3DPFZAmeh6QACzuPFpuckSpB~b332edlPBMbsgoaKbw-KCRu5cFsvkGIxlfLuOx~K08FcqGYsWguWWWR0FWAROJtA__)
 
 ---
 
