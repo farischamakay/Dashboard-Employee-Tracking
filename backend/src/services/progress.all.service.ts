@@ -5,7 +5,7 @@ import { QueryTypes } from "sequelize";
 class ProgressService {
   async getProgressAll() {
     try {
-      // 1. Get active users (should return 21 users)
+      // 1. Get active users
       const [activeUsers] = await db.sequelize.query(
         `SELECT userId, fullname as name, username, email, phoneNumber FROM users WHERE active = 1;`
       );
@@ -133,7 +133,7 @@ class ProgressService {
       );
 
       // 6. Calculate metrics
-      const totalUser = activeUsers.length; // Now correctly 21
+      const totalUser = activeUsers.length;
       const possibilityExam = runningCourses.length + runningTryouts.length;
       const allProgressScore =
         possibilityExam > 0

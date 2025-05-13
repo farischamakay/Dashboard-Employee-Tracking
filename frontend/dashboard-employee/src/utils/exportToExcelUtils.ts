@@ -40,6 +40,7 @@ export const exportToExcel = (
   });
 
   worksheetData.push([]);
+
   worksheetData.push(["Course Details"]);
   worksheetData.push([
     "Employee Name",
