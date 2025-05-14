@@ -7,6 +7,7 @@ class RunningProgressService {
         FROM courses
         WHERE JSON_UNQUOTE(JSON_EXTRACT(data, '$.startDate')) <= CURDATE()
           AND JSON_UNQUOTE(JSON_EXTRACT(data, '$.endDate')) >= CURDATE()
+          AND ACTIVE = 1
       `);
             return runningCourses;
         }
@@ -21,6 +22,7 @@ class RunningProgressService {
       FROM tryout_sections
       WHERE JSON_UNQUOTE(JSON_EXTRACT(data, '$.startDate')) <= CURDATE()
         AND JSON_UNQUOTE(JSON_EXTRACT(data, '$.endDate')) >= CURDATE()
+        AND ACTIVE = 1
     `);
             return runningTryouts;
         }

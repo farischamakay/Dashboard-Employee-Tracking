@@ -247,7 +247,7 @@ export const useExportDataEmploye = create<ExportDataState>((set) => ({
       const data = await generateReports(referenceData);
       set({ report: data, isLoading: false });
       console.log("Updated Report Data:", data);
-      return data; // return result langsung
+      return data;
     } catch (e) {
       set({
         error: e instanceof Error ? e.message : "Failed to fetch progress",

@@ -92,7 +92,9 @@ class GenerateReportService {
     return db.sequelize.query(
       `SELECT courseId FROM courses
        WHERE JSON_UNQUOTE(JSON_EXTRACT(data, '$.startDate')) <= CURDATE()
-         AND JSON_UNQUOTE(JSON_EXTRACT(data, '$.endDate')) >= CURDATE()`,
+         AND JSON_UNQUOTE(JSON_EXTRACT(data, '$.endDate')) >= CURDATE()
+         AND ACTIVE = 1`,
+
       { type: QueryTypes.SELECT }
     );
   }
@@ -101,7 +103,8 @@ class GenerateReportService {
     return db.sequelize.query(
       `SELECT tryoutId FROM tryout_sections
        WHERE JSON_UNQUOTE(JSON_EXTRACT(data, '$.startDate')) <= CURDATE()
-         AND JSON_UNQUOTE(JSON_EXTRACT(data, '$.endDate')) >= CURDATE()`,
+         AND JSON_UNQUOTE(JSON_EXTRACT(data, '$.endDate')) >= CURDATE()
+         AND ACTIVE = 1`,
       { type: QueryTypes.SELECT }
     );
   }

@@ -36,7 +36,6 @@ export default function EmployeeOverview({ employee }: EmployeeOverviewProps) {
   const totalCourses = employee.examPossible;
 
   const handleExportEmployee = async () => {
-    // Implement export logic here
     const referenceData = {
       referenceType: "user",
       referenceId: employee.id,
@@ -66,14 +65,16 @@ export default function EmployeeOverview({ employee }: EmployeeOverviewProps) {
               {employee.groupTitle} •
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <Button
-              onClick={handleExportEmployee}
-              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex items-center"
-            >
-              <FileDown className="h-4 w-4" /> Export {employee.name} Report
-            </Button>
-          </div>
+          {employee.completion !== 0 && (
+            <div className="flex items-center gap-4">
+              <Button
+                onClick={handleExportEmployee}
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex items-center"
+              >
+                <FileDown className="h-4 w-4" /> Export {employee.name} Report
+              </Button>
+            </div>
+          )}
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">

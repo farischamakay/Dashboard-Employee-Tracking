@@ -41,12 +41,14 @@ class GenerateReportService {
     async getRunningCourses() {
         return db.sequelize.query(`SELECT courseId FROM courses
        WHERE JSON_UNQUOTE(JSON_EXTRACT(data, '$.startDate')) <= CURDATE()
-         AND JSON_UNQUOTE(JSON_EXTRACT(data, '$.endDate')) >= CURDATE()`, { type: QueryTypes.SELECT });
+         AND JSON_UNQUOTE(JSON_EXTRACT(data, '$.endDate')) >= CURDATE()
+         AND ACTIVE = 1`, { type: QueryTypes.SELECT });
     }
     async getRunningTryouts() {
         return db.sequelize.query(`SELECT tryoutId FROM tryout_sections
        WHERE JSON_UNQUOTE(JSON_EXTRACT(data, '$.startDate')) <= CURDATE()
-         AND JSON_UNQUOTE(JSON_EXTRACT(data, '$.endDate')) >= CURDATE()`, { type: QueryTypes.SELECT });
+         AND JSON_UNQUOTE(JSON_EXTRACT(data, '$.endDate')) >= CURDATE()
+         AND ACTIVE = 1`, { type: QueryTypes.SELECT });
     }
     async getTargetUsers(referenceType, referenceId) {
         let targetUsers = [];

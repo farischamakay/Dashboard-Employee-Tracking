@@ -46,7 +46,11 @@ export default function ExportSection({ reports }: ExportSectionProps) {
     const result = await handleGenerateAndExport(referenceData);
     console.log("Hasil API:", result);
     if (result) {
-      exportToExcel(result.users, "Employee_Learning_Report");
+      if (exportBy == "group" && fileName) {
+        exportToExcel(result.users, `${fileName}_Learning_Report`);
+      } else {
+        exportToExcel(result.users, "Employee_Learning_Report");
+      }
       console.log("Export Button Clicked 2:", {
         exportBy,
         referenceType,

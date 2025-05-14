@@ -41,6 +41,7 @@ class ProgressService {
         FROM courses
         WHERE JSON_UNQUOTE(JSON_EXTRACT(data, '$.startDate')) <= CURDATE()
           AND JSON_UNQUOTE(JSON_EXTRACT(data, '$.endDate')) >= CURDATE()
+          AND ACTIVE = 1
       `);
 
       const [runningTryouts] = await db.sequelize.query(`
@@ -48,6 +49,7 @@ class ProgressService {
         FROM tryout_sections
         WHERE JSON_UNQUOTE(JSON_EXTRACT(data, '$.startDate')) <= CURDATE()
           AND JSON_UNQUOTE(JSON_EXTRACT(data, '$.endDate')) >= CURDATE()
+          AND ACTIVE = 1
       `);
 
       // 4. Get group statistics (fixed to avoid user duplication)

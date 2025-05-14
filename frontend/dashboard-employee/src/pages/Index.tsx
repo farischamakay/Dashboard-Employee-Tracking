@@ -6,6 +6,7 @@ import {
 import {
   Pagination,
   PaginationContent,
+  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -178,16 +179,100 @@ const Index = () => {
                     />
                   </PaginationItem>
 
-                  {Array.from({ length: totalPages }, (_, i) => (
-                    <PaginationItem key={i + 1}>
+                  {/* Always show first page */}
+                  <PaginationItem>
+                    <PaginationLink
+                      onClick={() => handlePageChange(1)}
+                      isActive={currentPage === 1}
+                    >
+                      1
+                    </PaginationLink>
+                  </PaginationItem>
+
+                  {/* Show dynamic page numbers */}
+                  {(() => {
+                    const pages = [];
+                    const maxVisiblePages = 3; // Adjust as needed
+                    let startPage, endPage;
+
+                    if (totalPages <= maxVisiblePages) {
+                      // Show all pages
+                      startPage = 2;
+                      endPage = totalPages - 1;
+                    } else {
+                      // Calculate start and end pages
+                      const maxPagesBeforeCurrent = Math.floor(
+                        maxVisiblePages / 2
+                      );
+                      const maxPagesAfterCurrent =
+                        Math.ceil(maxVisiblePages / 2) - 1;
+
+                      if (currentPage <= maxPagesBeforeCurrent) {
+                        // Near the beginning
+                        startPage = 2;
+                        endPage = maxVisiblePages - 1;
+                      } else if (
+                        currentPage + maxPagesAfterCurrent >=
+                        totalPages
+                      ) {
+                        // Near the end
+                        startPage = totalPages - (maxVisiblePages - 2);
+                        endPage = totalPages - 1;
+                      } else {
+                        // Somewhere in the middle
+                        startPage =
+                          currentPage - Math.floor((maxVisiblePages - 3) / 2);
+                        endPage =
+                          currentPage + Math.ceil((maxVisiblePages - 3) / 2);
+                      }
+                    }
+
+                    // Add ellipsis after first page
+                    if (startPage > 2) {
+                      pages.push(
+                        <PaginationItem key="ellipsis-start">
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      );
+                    }
+
+                    // Add page numbers
+                    for (let i = startPage; i <= endPage; i++) {
+                      pages.push(
+                        <PaginationItem key={i}>
+                          <PaginationLink
+                            onClick={() => handlePageChange(i)}
+                            isActive={currentPage === i}
+                          >
+                            {i}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    }
+
+                    // Add ellipsis before last page if needed
+                    if (endPage < totalPages - 1) {
+                      pages.push(
+                        <PaginationItem key="ellipsis-end">
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      );
+                    }
+
+                    return pages;
+                  })()}
+
+                  {/* Always show last page if there's more than 1 page */}
+                  {totalPages > 1 && (
+                    <PaginationItem>
                       <PaginationLink
-                        onClick={() => handlePageChange(i + 1)}
-                        isActive={currentPage === i + 1}
+                        onClick={() => handlePageChange(totalPages)}
+                        isActive={currentPage === totalPages}
                       >
-                        {i + 1}
+                        {totalPages}
                       </PaginationLink>
                     </PaginationItem>
-                  ))}
+                  )}
 
                   <PaginationItem>
                     <PaginationNext
